@@ -5,8 +5,6 @@
 
     <!--<context:annotation-config/>-->
 
-    <bean class="ru.siksmfp.spring.hibernatehsql.annotation.HqlBeanPostProcessor"/>
-
     <bean name="setUpBean" class="ru.siksmfp.spring.hibernatehsql.config.SetUpBean">
     </bean>
 
@@ -16,6 +14,15 @@
 
     <bean name="hqlInvocationHandler" class="ru.siksmfp.spring.hibernatehsql.annotation.HqlInvocationHandler">
         <property name="genericRepository" ref="genericRepository"/>
+    </bean>
+
+    <bean name="repositoryFactoryPostProcessor"
+          class="ru.siksmfp.spring.hibernatehsql.annotation.RepositoryFactoryPostProcessor">
+        <property name="hqlInvocationHandler" ref="hqlInvocationHandler"/>
+    </bean>
+
+    <bean name="entityService" class="ru.siksmfp.spring.hibernatehsql.service.EntityService">
+    <property name="entityRepository" value=""/>
     </bean>
 
     <bean name="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -44,19 +51,12 @@
         </property>
     </bean>
 
-    <bean name="entityService" class="ru.siksmfp.spring.hibernatehsql.service.EntityService">
-    </bean>
-
-    <!--<bean name="hqlStarter" class="ru.siksmfp.spring.hibernatehsql.annotation.HqlStarter">-->
-    <!--<property name="sessionFactory" ref="sessionFactory"/>-->
-    <!--</bean>-->
 
     <bean id="hqlAspect" class="ru.siksmfp.spring.hibernatehsql.annotation.HqlAspect" factory-method="aspectOf"
           autowire="byType">
 
     </bean>
 
-    <!--<aop:aspectj-autoproxy/>-->
 
     <aop:config>
         <aop:aspect id="aspectHql" ref="hqlAspect">

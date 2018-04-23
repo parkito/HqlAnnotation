@@ -11,7 +11,6 @@ import java.util.List;
  * @author Artem Karnov @date 4/17/2018.
  * @email artem.karnov@t-systems.com
  */
-@Repository
 public interface EntityRepository extends IGenericRepository<Data, Long> {
 
     @Hql(value = "select d from Data d where d.dataString = '?1'")

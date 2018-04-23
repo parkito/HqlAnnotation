@@ -13,14 +13,14 @@ import java.util.List;
  */
 @Service
 public class EntityService {
-
+    @Autowired
     private EntityRepository entityRepository;
 
     public void save(Data data) {
         entityRepository.save(data);
     }
 
-    public void deleteAll(){
+    public void deleteAll() {
         entityRepository.deleteAll();
     }
 
@@ -41,7 +41,7 @@ public class EntityService {
     }
 
     public List<Data> findDataByString(String string) {
-       return entityRepository.findDataByString(string);
+        return entityRepository.findDataByString(string);
     }
 
     public void setEntityRepository(EntityRepository entityRepository) {
