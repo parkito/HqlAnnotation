@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--<context:annotation-config/>-->
+
+    <bean class="ru.siksmfp.spring.hibernatehsql.annotation.HqlBeanPostProcessor"/>
+
+    <bean name="setUpBean" class="ru.siksmfp.spring.hibernatehsql.config.SetUpBean">
+    </bean>
+
+    <bean name="genericRepository" class="ru.siksmfp.spring.hibernatehsql.repository.api.GenericRepository">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean name="hqlInvocationHandler" class="ru.siksmfp.spring.hibernatehsql.annotation.HqlInvocationHandler">
+        <property name="genericRepository" ref="genericRepository"/>
+    </bean>
+
+    <bean name="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+        <property name="url" value="jdbc:derby:mydb"/>
+        <property name="username" value="app"/>
+        <property name="password" value="derby"/>
+    </bean>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="annotatedClasses">
+            <list>
+                <value>ru.siksmfp.spring.hibernatehsql.entity.Data</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.DerbyTenSevenDialect</prop>
+                <prop key="hibernate.current_session_context_class">thread</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">create</prop>
+                <prop key="org.hibernate.SQL.level">TRACE</prop>
+                <prop key="org.hibernate.type.level">TRACE</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean name="entityService" class="ru.siksmfp.spring.hibernatehsql.service.EntityService">
+    </bean>
+
+    <!--<bean name="hqlStarter" class="ru.siksmfp.spring.hibernatehsql.annotation.HqlStarter">-->
+    <!--<property name="sessionFactory" ref="sessionFactory"/>-->
+    <!--</bean>-->
+
+    <bean id="hqlAspect" class="ru.siksmfp.spring.hibernatehsql.annotation.HqlAspect" factory-method="aspectOf"
+          autowire="byType">
+
+    </bean>
+
+    <!--<aop:aspectj-autoproxy/>-->
+
+    <aop:config>
+        <aop:aspect id="aspectHql" ref="hqlAspect">
+            <!--<aop:pointcut id="aroundPointcut" expression="@annotation(ru.siksmfp.spring.hibernatehsql.annotation.Hql)"/>-->
+            <!--<aop:around method="princessHql" pointcut-ref="aroundPointcut"/>-->
+        </aop:aspect>
+    </aop:config>
+
+</beans>
