@@ -22,7 +22,7 @@
     </bean>
 
     <bean name="entityService" class="ru.siksmfp.spring.hibernatehsql.service.EntityService">
-    <property name="entityRepository" value=""/>
+        <property name="entityRepository" value="entityRepository"/>
     </bean>
 
     <bean name="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">

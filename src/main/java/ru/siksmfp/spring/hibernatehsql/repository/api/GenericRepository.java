@@ -10,6 +10,7 @@ import ru.siksmfp.spring.hibernatehsql.exception.DAOException;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -139,6 +140,27 @@ public class GenericRepository<E, K extends Serializable> implements IGenericRep
             return (long) query.uniqueResult();
         } catch (Exception ex) {
             throw new DAOException("Can't calculate table size of " + daoType.getSimpleName(), ex);
+        }
+    }
+
+    public Object performQuery(String queryString, Class returningType) {
+        List resultList;
+        try (Session session = this.sessionFactory.openSession()) {
+            Transaction tx = session.beginTransaction();
+            Query query = session.createQuery(queryString);
+            resultList = query.getResultList();
+            tx.commit();
+        } catch (Exception ex) {
+            throw new DAOException("Can't perform query " + queryString, ex);
+        }
+        if (Collection.class.isAssignableFrom(returningType)) {
+            return resultList;
+        } else {
+            if (resultList.size() > 1) {
+                return returningType.cast(resultList);
+            } else {
+                throw new IllegalStateException("Found more than one elements");
+            }
         }
     }
 
