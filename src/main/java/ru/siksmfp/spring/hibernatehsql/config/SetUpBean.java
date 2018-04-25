@@ -16,7 +16,6 @@ public class SetUpBean {
     private static final String DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
     private static final String JDBC_URL = "jdbc:derby:mydb;create=true";
 
-    @PostConstruct
     public void setUp() throws SQLException {
         Connection conn = null;
         try {

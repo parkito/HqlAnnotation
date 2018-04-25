@@ -24,10 +24,10 @@ public class RepositoryFactoryPostProcessor implements BeanFactoryPostProcessor 
         for (Class bean : repos) {
             Object newBean = Proxy.newProxyInstance(
                     this.getClass().getClassLoader(),
-                    new Class[]{bean.getClass()},
+                    new Class[]{bean},
                     hqlInvocationHandler);
 
-            beanFactory.registerSingleton(bean.getName(), newBean);
+            beanFactory.registerSingleton(bean.getSimpleName(), newBean);
         }
     }
 

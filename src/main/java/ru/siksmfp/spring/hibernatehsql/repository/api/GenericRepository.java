@@ -4,12 +4,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.siksmfp.spring.hibernatehsql.exception.DAOException;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,22 +14,15 @@ import java.util.List;
  * @author Artem Karnov @date 4/17/2018.
  * @email artem.karnov@t-systems.com
  */
-public class GenericRepository<E, K extends Serializable> implements IGenericRepository<E, K> {
-    @Autowired
+public class GenericRepository {
+
     private SessionFactory sessionFactory;
 
-    private Class<E> daoType;
+    private Class<Object> daoType;
 
     private int batchSize = 10;
 
-    public GenericRepository() {
-        Type t = getClass().getGenericSuperclass();
-        ParameterizedType pt = (ParameterizedType) t;
-        this.daoType = (Class<E>) pt.getActualTypeArguments()[0];
-    }
-
-    @Override
-    public void save(E entity) {
+    public void save(Object entity) {
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
             session.save(entity);
@@ -42,8 +32,7 @@ public class GenericRepository<E, K extends Serializable> implements IGenericRep
         }
     }
 
-    @Override
-    public void batchSave(List<E> entityList) {
+    public void batchSave(List<Object> entityList) {
         try (Session session = sessionFactory.openSession()) {
             int tableSize = entityList.size();
             for (int i = 0; i < tableSize; i += batchSize) {
@@ -52,7 +41,7 @@ public class GenericRepository<E, K extends Serializable> implements IGenericRep
                 int lastIndex = (i + batchSize) < tableSize ? (i + batchSize) : tableSize;
                 internalQuery.setFirstResult(0);
                 internalQuery.setMaxResults(batchSize);
-                for (E currentEntity : entityList.subList(i, lastIndex)) {
+                for (Object currentEntity : entityList.subList(i, lastIndex)) {
                     if (currentEntity != null)
                         session.save(currentEntity);
                 }
@@ -63,12 +52,11 @@ public class GenericRepository<E, K extends Serializable> implements IGenericRep
         }
     }
 
-    @Override
-    public E find(K key) {
-        E result;
+    public Object find(Object key) {
+        Object result;
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
-            result = session.get(daoType, key);
+            result = session.get(daoType, (Serializable) key);
             tx.commit();
         } catch (Exception ex) {
             throw new DAOException("Can't find " + key, ex);
@@ -76,8 +64,7 @@ public class GenericRepository<E, K extends Serializable> implements IGenericRep
         return result;
     }
 
-    @Override
-    public void update(E entity) {
+    public void update(Object entity) {
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
             session.update(entity);
@@ -87,8 +74,7 @@ public class GenericRepository<E, K extends Serializable> implements IGenericRep
         }
     }
 
-    @Override
-    public void delete(E entity) {
+    public void delete(Object entity) {
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
             session.delete(entity);
@@ -98,8 +84,7 @@ public class GenericRepository<E, K extends Serializable> implements IGenericRep
         }
     }
 
-    @Override
-    public List<E> getAll() {
+    public List<Object> getAll() {
         List result;
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
@@ -109,10 +94,9 @@ public class GenericRepository<E, K extends Serializable> implements IGenericRep
         } catch (Exception ex) {
             throw new DAOException("Can't find all ", ex);
         }
-        return (List<E>) result;
+        return (List<Object>) result;
     }
 
-    @Override
     public void deleteAll() {
         try (Session session = sessionFactory.openSession()) {
             long tableSize = countElements();
@@ -121,8 +105,8 @@ public class GenericRepository<E, K extends Serializable> implements IGenericRep
                 Query internalQuery = session.createQuery("from " + daoType.getSimpleName());
                 internalQuery.setFirstResult(0);
                 internalQuery.setMaxResults(batchSize);
-                List<E> list = internalQuery.list();
-                for (E e : list) {
+                List<Object> list = internalQuery.list();
+                for (Object e : list) {
                     if (e != null)
                         session.delete(e);
                 }
@@ -133,7 +117,6 @@ public class GenericRepository<E, K extends Serializable> implements IGenericRep
         }
     }
 
-    @Override
     public long countElements() {
         try (Session session = sessionFactory.openSession()) {
             Query query = session.createQuery("select count(1) from " + daoType.getSimpleName());

@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!--<context:annotation-config/>-->
 
-    <bean name="setUpBean" class="ru.siksmfp.spring.hibernatehsql.config.SetUpBean">
+    <bean name="setUpBean" class="ru.siksmfp.spring.hibernatehsql.config.SetUpBean" init-method="setUp">
     </bean>
 
-    <bean name="genericRepository" class="ru.siksmfp.spring.hibernatehsql.repository.api.GenericRepository">
+    <bean name="genericRepository" class="ru.siksmfp.spring.hibernatehsql.repository.api.GenericRepository"
+          depends-on="setUpBean">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
@@ -21,8 +22,8 @@
         <property name="hqlInvocationHandler" ref="hqlInvocationHandler"/>
     </bean>
 
-    <bean name="entityService" class="ru.siksmfp.spring.hibernatehsql.service.EntityService">
-        <property name="entityRepository" value="entityRepository"/>
+    <bean name="entityService" class="ru.siksmfp.spring.hibernatehsql.service.EntityService" depends-on="repositoryFactoryPostProcessor">
+        <property name="entityRepository" value="EntityRepository"/>
     </bean>
 
     <bean name="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -50,19 +51,5 @@
             </props>
         </property>
     </bean>
-
-
-    <bean id="hqlAspect" class="ru.siksmfp.spring.hibernatehsql.annotation.HqlAspect" factory-method="aspectOf"
-          autowire="byType">
-
-    </bean>
-
-
-    <aop:config>
-        <aop:aspect id="aspectHql" ref="hqlAspect">
-            <!--<aop:pointcut id="aroundPointcut" expression="@annotation(ru.siksmfp.spring.hibernatehsql.annotation.Hql)"/>-->
-            <!--<aop:around method="princessHql" pointcut-ref="aroundPointcut"/>-->
-        </aop:aspect>
-    </aop:config>
 
 </beans>
