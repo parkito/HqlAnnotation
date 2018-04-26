@@ -14,6 +14,7 @@ public class HqlInvocationHandler implements InvocationHandler {
 
     private GenericRepository genericRepository;
 
+    // TODO: 4/26/2018 How to know return generic type??
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Hql annotation = method.getAnnotation(Hql.class);
@@ -34,11 +35,13 @@ public class HqlInvocationHandler implements InvocationHandler {
             case "save":
                 genericRepository.save(args[0]);
                 return null;
-            case "batchSave":
-                genericRepository.batchSave((List) args[0]);
-                return null;
+//            case "batchSave":
+//                genericRepository.batchSave((List) args[0]);
+            case "getAll":
+                return genericRepository.getAll(method.getReturnType());
             default:
                 return null;
+
         }
     }
 

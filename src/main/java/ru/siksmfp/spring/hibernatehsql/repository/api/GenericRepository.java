@@ -18,8 +18,6 @@ public class GenericRepository {
 
     private SessionFactory sessionFactory;
 
-    private Class<Object> daoType;
-
     private int batchSize = 10;
 
     public void save(Object entity) {
@@ -32,7 +30,7 @@ public class GenericRepository {
         }
     }
 
-    public void batchSave(List<Object> entityList) {
+    public void batchSave(List<Object> entityList, Class daoType) {
         try (Session session = sessionFactory.openSession()) {
             int tableSize = entityList.size();
             for (int i = 0; i < tableSize; i += batchSize) {
@@ -52,7 +50,7 @@ public class GenericRepository {
         }
     }
 
-    public Object find(Object key) {
+    public Object find(Object key, Class daoType) {
         Object result;
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
@@ -84,7 +82,7 @@ public class GenericRepository {
         }
     }
 
-    public List<Object> getAll() {
+    public List<Object> getAll(Class daoType) {
         List result;
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
@@ -97,9 +95,9 @@ public class GenericRepository {
         return (List<Object>) result;
     }
 
-    public void deleteAll() {
+    public void deleteAll(Class daoType) {
         try (Session session = sessionFactory.openSession()) {
-            long tableSize = countElements();
+            long tableSize = countElements(daoType);
             for (int i = 0; i < tableSize; i += batchSize) {
                 Transaction tx = session.beginTransaction();
                 Query internalQuery = session.createQuery("from " + daoType.getSimpleName());
@@ -117,7 +115,7 @@ public class GenericRepository {
         }
     }
 
-    public long countElements() {
+    public long countElements(Class daoType) {
         try (Session session = sessionFactory.openSession()) {
             Query query = session.createQuery("select count(1) from " + daoType.getSimpleName());
             return (long) query.uniqueResult();
@@ -162,5 +160,4 @@ public class GenericRepository {
     private void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
     }
-
 }

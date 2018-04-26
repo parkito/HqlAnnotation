@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Service
 public class EntityService {
-    @Autowired
+    
     private EntityRepository entityRepository;
 
     public void save(Data data) {
