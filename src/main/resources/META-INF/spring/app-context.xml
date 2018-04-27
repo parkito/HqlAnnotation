@@ -13,13 +13,17 @@
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
+    <bean name="typeContainer" class="ru.siksmfp.spring.hibernatehsql.annotation.TypeInfoContainer"/>
+
     <bean name="hqlInvocationHandler" class="ru.siksmfp.spring.hibernatehsql.annotation.HqlInvocationHandler">
         <property name="genericRepository" ref="genericRepository"/>
+        <property name="typeContainer" ref="typeContainer"/>
     </bean>
 
     <bean name="contextStartedEventListener"
           class="ru.siksmfp.spring.hibernatehsql.annotation.ContextStartedEventListener">
         <property name="hqlInvocationHandler" ref="hqlInvocationHandler"/>
+        <property name="typeContainer" ref="typeContainer"/>
     </bean>
 
     <bean name="entityService" class="ru.siksmfp.spring.hibernatehsql.service.EntityService">

@@ -4,7 +4,6 @@ import ru.siksmfp.spring.hibernatehsql.repository.api.GenericRepository;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * @author Artem Karnov @date 4/23/2018.
@@ -13,10 +12,10 @@ import java.util.List;
 public class HqlInvocationHandler implements InvocationHandler {
 
     private GenericRepository genericRepository;
+    private TypeInfoContainer typeContainer;
 
-    // TODO: 4/26/2018 How to know return generic type??
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) {
         Hql annotation = method.getAnnotation(Hql.class);
         if (annotation != null) {
             int parameterCount = args.length;
@@ -38,7 +37,8 @@ public class HqlInvocationHandler implements InvocationHandler {
 //            case "batchSave":
 //                genericRepository.batchSave((List) args[0]);
             case "getAll":
-                return genericRepository.getAll(method.getReturnType());
+                String objectTypeName = typeContainer.getObjectTypeName(proxy);
+                return genericRepository.getAll(objectTypeName);
             default:
                 return null;
 
@@ -59,5 +59,13 @@ public class HqlInvocationHandler implements InvocationHandler {
 
     public GenericRepository getGenericRepository() {
         return genericRepository;
+    }
+
+    public void setTypeContainer(TypeInfoContainer typeContainer) {
+        this.typeContainer = typeContainer;
+    }
+
+    public TypeInfoContainer getTypeContainer() {
+        return typeContainer;
     }
 }

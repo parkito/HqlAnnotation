@@ -13,6 +13,8 @@ syntax: glob
 \.chg\..*$
 \.rej$
 \.conflict\~$
+app.log
+derby.log
 
 *.class
 

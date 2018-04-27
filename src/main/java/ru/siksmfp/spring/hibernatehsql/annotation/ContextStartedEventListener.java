@@ -6,7 +6,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import ru.siksmfp.spring.hibernatehsql.repository.api.IGenericRepository;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -18,13 +20,12 @@ import java.util.Set;
  * @email artem.karnov@t-systems.com
  */
 public class ContextStartedEventListener implements ApplicationListener<ContextRefreshedEvent> {
-    private Map<Class, Object> beanMap;
 
     private HqlInvocationHandler hqlInvocationHandler;
+    private TypeInfoContainer typeContainer;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        beanMap = new HashMap<>();
         Set<Class<? extends IGenericRepository>> repos = findAllRepositoriesInClassPath("ru");
 
         for (Class beanClass : repos) {
@@ -32,7 +33,17 @@ public class ContextStartedEventListener implements ApplicationListener<ContextR
                     this.getClass().getClassLoader(),
                     new Class[]{beanClass},
                     hqlInvocationHandler);
-            beanMap.put(beanClass, beanInstance);
+            typeContainer.addInstance(beanClass, beanInstance);
+
+            Type[] genericInterfaces = beanClass.getGenericInterfaces();
+            for (Type genericInterface : genericInterfaces) {
+                if (genericInterface instanceof ParameterizedType) {
+                    Type genericType = ((ParameterizedType) genericInterface).getActualTypeArguments()[0];
+                    String fullTypeName = genericType.getTypeName();
+                    String[] split = fullTypeName.split("\\.");
+                    typeContainer.addObjectType(beanClass, split[split.length - 1]);
+                }
+            }
         }
 
         String[] beanNames = event.getApplicationContext().getBeanDefinitionNames();
@@ -46,7 +57,7 @@ public class ContextStartedEventListener implements ApplicationListener<ContextR
                     beanField.setAccessible(true);
                     try {
                         if (beanField.get(bean) == null) {
-                            beanField.set(bean, beanField.getType().cast(beanMap.get(beanField.getType())));
+                            beanField.set(bean, beanField.getType().cast(typeContainer.getInstance(beanField.getType())));
                         }
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
@@ -69,4 +80,11 @@ public class ContextStartedEventListener implements ApplicationListener<ContextR
         return hqlInvocationHandler;
     }
 
+    public void setTypeContainer(TypeInfoContainer typeContainer) {
+        this.typeContainer = typeContainer;
+    }
+
+    public TypeInfoContainer getTypeContainer() {
+        return typeContainer;
+    }
 }

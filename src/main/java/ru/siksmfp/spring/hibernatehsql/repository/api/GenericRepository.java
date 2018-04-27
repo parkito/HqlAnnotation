@@ -30,12 +30,12 @@ public class GenericRepository {
         }
     }
 
-    public void batchSave(List<Object> entityList, Class daoType) {
+    public void batchSave(List<Object> entityList, String daoTypeName) {
         try (Session session = sessionFactory.openSession()) {
             int tableSize = entityList.size();
             for (int i = 0; i < tableSize; i += batchSize) {
                 Transaction tx = session.beginTransaction();
-                Query internalQuery = session.createQuery("from " + daoType.getSimpleName());
+                Query internalQuery = session.createQuery("from " + daoTypeName);
                 int lastIndex = (i + batchSize) < tableSize ? (i + batchSize) : tableSize;
                 internalQuery.setFirstResult(0);
                 internalQuery.setMaxResults(batchSize);
@@ -50,11 +50,11 @@ public class GenericRepository {
         }
     }
 
-    public Object find(Object key, Class daoType) {
+    public Object find(Object key, String daoTypeName) {
         Object result;
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
-            result = session.get(daoType, (Serializable) key);
+            result = session.get(daoTypeName, (Serializable) key);
             tx.commit();
         } catch (Exception ex) {
             throw new DAOException("Can't find " + key, ex);
@@ -82,11 +82,11 @@ public class GenericRepository {
         }
     }
 
-    public List<Object> getAll(Class daoType) {
+    public List<Object> getAll(String daoTypeName) {
         List result;
         try (Session session = sessionFactory.openSession()) {
             Transaction tx = session.beginTransaction();
-            Query query = session.createQuery("from " + daoType.getSimpleName());
+            Query query = session.createQuery("from " + daoTypeName);
             result = query.list();
             tx.commit();
         } catch (Exception ex) {
@@ -95,12 +95,12 @@ public class GenericRepository {
         return (List<Object>) result;
     }
 
-    public void deleteAll(Class daoType) {
+    public void deleteAll(String daoTypeName) {
         try (Session session = sessionFactory.openSession()) {
-            long tableSize = countElements(daoType);
+            long tableSize = countElements(daoTypeName);
             for (int i = 0; i < tableSize; i += batchSize) {
                 Transaction tx = session.beginTransaction();
-                Query internalQuery = session.createQuery("from " + daoType.getSimpleName());
+                Query internalQuery = session.createQuery("from " + daoTypeName);
                 internalQuery.setFirstResult(0);
                 internalQuery.setMaxResults(batchSize);
                 List<Object> list = internalQuery.list();
@@ -115,12 +115,12 @@ public class GenericRepository {
         }
     }
 
-    public long countElements(Class daoType) {
+    public long countElements(String daoTypeName) {
         try (Session session = sessionFactory.openSession()) {
-            Query query = session.createQuery("select count(1) from " + daoType.getSimpleName());
+            Query query = session.createQuery("select count(1) from " + daoTypeName);
             return (long) query.uniqueResult();
         } catch (Exception ex) {
-            throw new DAOException("Can't calculate table size of " + daoType.getSimpleName(), ex);
+            throw new DAOException("Can't calculate table size of " + daoTypeName, ex);
         }
     }
 
