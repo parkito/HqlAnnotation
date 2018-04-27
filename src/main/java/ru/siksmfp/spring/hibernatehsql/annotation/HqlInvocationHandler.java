@@ -4,6 +4,7 @@ import ru.siksmfp.spring.hibernatehsql.repository.api.GenericRepository;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @author Artem Karnov @date 4/23/2018.
@@ -30,15 +31,29 @@ public class HqlInvocationHandler implements InvocationHandler {
             return genericRepository.performQuery(query, returnType);
         }
 
+        String objectTypeName = typeContainer.getObjectTypeName(proxy);
+
         switch (method.getName()) {
             case "save":
                 genericRepository.save(args[0]);
                 return null;
-//            case "batchSave":
-//                genericRepository.batchSave((List) args[0]);
+            case "batchSave":
+                genericRepository.batchSave((List) args[0], objectTypeName);
+                return null;
+            case "find":
+                return genericRepository.find(args[0], objectTypeName);
+            case "update":
+                genericRepository.update(args[0]);
+                return null;
+            case "delete":
+                genericRepository.delete(args[0]);
+                return null;
             case "getAll":
-                String objectTypeName = typeContainer.getObjectTypeName(proxy);
                 return genericRepository.getAll(objectTypeName);
+            case "deleteAll":
+                genericRepository.deleteAll(objectTypeName);
+            case "countElements":
+                return genericRepository.countElements(objectTypeName);
             default:
                 return null;
 

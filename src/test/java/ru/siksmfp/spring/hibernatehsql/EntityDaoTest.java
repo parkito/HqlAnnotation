@@ -35,7 +35,7 @@ public class EntityDaoTest {
 
     @Before
     public void setUp() {
-//        entityDao.deleteAll();
+        entityDao.deleteAll();
     }
 
     @Test
