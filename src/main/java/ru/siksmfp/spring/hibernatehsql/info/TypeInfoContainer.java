@@ -1,4 +1,4 @@
-package ru.siksmfp.spring.hibernatehsql.annotation;
+package ru.siksmfp.spring.hibernatehsql.info;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,16 +9,16 @@ import java.util.Map;
  */
 public class TypeInfoContainer {
 
-    private final static Map<Class, RepositoryInfo> TYPE_CONTAINER_MAP = new HashMap<>();
+    private final static Map<Class, RepositoryInfo> REPOSITORY_INFO_MAP = new HashMap<>();
 
     public void addInstance(Class clazz, Object object) {
         RepositoryInfo repositoryInfo = new RepositoryInfo();
         repositoryInfo.setInstance(object);
-        TYPE_CONTAINER_MAP.put(clazz, repositoryInfo);
+        REPOSITORY_INFO_MAP.put(clazz, repositoryInfo);
     }
 
     public void addObjectType(Class clazz, String objectType) {
-        RepositoryInfo repositoryInfo = TYPE_CONTAINER_MAP.get(clazz);
+        RepositoryInfo repositoryInfo = REPOSITORY_INFO_MAP.get(clazz);
         if (repositoryInfo != null) {
             repositoryInfo.setTypeName(objectType);
         } else {
@@ -27,7 +27,7 @@ public class TypeInfoContainer {
     }
 
     public Object getInstance(Class clazz) {
-        RepositoryInfo repositoryInfo = TYPE_CONTAINER_MAP.get(clazz);
+        RepositoryInfo repositoryInfo = REPOSITORY_INFO_MAP.get(clazz);
         if (repositoryInfo != null) {
             return repositoryInfo.getInstance();
         } else {
@@ -37,7 +37,7 @@ public class TypeInfoContainer {
 
 
     public String getFullName(Object object) {
-        for (Map.Entry<Class, RepositoryInfo> next : TYPE_CONTAINER_MAP.entrySet()) {
+        for (Map.Entry<Class, RepositoryInfo> next : REPOSITORY_INFO_MAP.entrySet()) {
             if (next.getValue().getInstance() == object) {
                 return next.getValue().getTypeName();
             }

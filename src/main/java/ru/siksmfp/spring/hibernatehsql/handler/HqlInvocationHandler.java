@@ -1,6 +1,8 @@
-package ru.siksmfp.spring.hibernatehsql.annotation;
+package ru.siksmfp.spring.hibernatehsql.handler;
 
-import ru.siksmfp.spring.hibernatehsql.repository.api.GenericRepository;
+import ru.siksmfp.spring.hibernatehsql.api.Hql;
+import ru.siksmfp.spring.hibernatehsql.info.TypeInfoContainer;
+import ru.siksmfp.spring.hibernatehsql.repository.GenericRepositoryImpl;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -12,7 +14,7 @@ import java.util.List;
  */
 public class HqlInvocationHandler implements InvocationHandler {
 
-    private GenericRepository genericRepository;
+    private GenericRepositoryImpl genericRepositoryImpl;
     private TypeInfoContainer typeContainer;
 
     @Override
@@ -28,36 +30,36 @@ public class HqlInvocationHandler implements InvocationHandler {
             String queryValue = annotation.value();
             String query = wiveParametersToQuery(queryValue, parameters);
             Class<?> returnType = method.getReturnType();
-            return genericRepository.performQuery(query, returnType);
+            return genericRepositoryImpl.performQuery(query, returnType);
         }
         String fullName, shortName;
 
         switch (method.getName()) {
             case "save":
-                genericRepository.save(args[0]);
+                genericRepositoryImpl.save(args[0]);
                 return null;
             case "batchSave":
                 shortName = typeContainer.getShortName(proxy);
-                genericRepository.batchSave((List) args[0], shortName);
+                genericRepositoryImpl.batchSave((List) args[0], shortName);
                 return null;
             case "find":
                 fullName = typeContainer.getFullName(proxy);
-                return genericRepository.find(args[0], fullName);
+                return genericRepositoryImpl.find(args[0], fullName);
             case "update":
-                genericRepository.update(args[0]);
+                genericRepositoryImpl.update(args[0]);
                 return null;
             case "delete":
-                genericRepository.delete(args[0]);
+                genericRepositoryImpl.delete(args[0]);
                 return null;
             case "getAll":
                 shortName = typeContainer.getShortName(proxy);
-                return genericRepository.getAll(shortName);
+                return genericRepositoryImpl.getAll(shortName);
             case "deleteAll":
                 shortName = typeContainer.getShortName(proxy);
-                genericRepository.deleteAll(shortName);
+                genericRepositoryImpl.deleteAll(shortName);
             case "countElements":
                 shortName = typeContainer.getShortName(proxy);
-                return genericRepository.countElements(shortName);
+                return genericRepositoryImpl.countElements(shortName);
             default:
                 return null;
 
@@ -73,12 +75,12 @@ public class HqlInvocationHandler implements InvocationHandler {
         return query;
     }
 
-    public void setGenericRepository(GenericRepository genericRepository) {
-        this.genericRepository = genericRepository;
+    public void setGenericRepositoryImpl(GenericRepositoryImpl genericRepositoryImpl) {
+        this.genericRepositoryImpl = genericRepositoryImpl;
     }
 
-    public GenericRepository getGenericRepository() {
-        return genericRepository;
+    public GenericRepositoryImpl getGenericRepositoryImpl() {
+        return genericRepositoryImpl;
     }
 
     public void setTypeContainer(TypeInfoContainer typeContainer) {

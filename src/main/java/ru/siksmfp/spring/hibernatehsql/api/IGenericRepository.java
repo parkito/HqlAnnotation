@@ -1,4 +1,4 @@
-package ru.siksmfp.spring.hibernatehsql.repository.api;
+package ru.siksmfp.spring.hibernatehsql.api;
 
 import java.io.Serializable;
 import java.util.List;

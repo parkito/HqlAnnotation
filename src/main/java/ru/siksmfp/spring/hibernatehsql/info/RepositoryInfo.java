@@ -1,4 +1,4 @@
-package ru.siksmfp.spring.hibernatehsql.annotation;
+package ru.siksmfp.spring.hibernatehsql.info;
 
 /**
  * @author Artem Karnov @date 4/27/2018.

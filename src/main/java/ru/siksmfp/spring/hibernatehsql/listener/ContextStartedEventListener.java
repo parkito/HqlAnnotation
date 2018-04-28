@@ -1,9 +1,11 @@
-package ru.siksmfp.spring.hibernatehsql.annotation;
+package ru.siksmfp.spring.hibernatehsql.listener;
 
 import org.reflections.Reflections;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import ru.siksmfp.spring.hibernatehsql.repository.api.IGenericRepository;
+import ru.siksmfp.spring.hibernatehsql.info.TypeInfoContainer;
+import ru.siksmfp.spring.hibernatehsql.handler.HqlInvocationHandler;
+import ru.siksmfp.spring.hibernatehsql.api.IGenericRepository;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;

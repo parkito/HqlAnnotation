@@ -1,4 +1,4 @@
-package ru.siksmfp.spring.hibernatehsql.repository.api;
+package ru.siksmfp.spring.hibernatehsql.repository;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,7 +14,7 @@ import java.util.List;
  * @author Artem Karnov @date 4/17/2018.
  * @email artem.karnov@t-systems.com
  */
-public class GenericRepository {
+public class GenericRepositoryImpl {
 
     private SessionFactory sessionFactory;
 

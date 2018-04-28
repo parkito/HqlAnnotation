@@ -1,9 +1,8 @@
 package ru.siksmfp.spring.hibernatehsql.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.siksmfp.spring.hibernatehsql.entity.Data;
-import ru.siksmfp.spring.hibernatehsql.repository.impl.EntityRepository;
+import ru.siksmfp.spring.hibernatehsql.repository.EntityRepository;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ import java.util.List;
  */
 @Service
 public class EntityService {
-    
+
     private EntityRepository entityRepository;
 
     public void save(Data data) {

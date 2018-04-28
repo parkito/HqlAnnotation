@@ -1,4 +1,4 @@
-package ru.siksmfp.spring.hibernatehsql.annotation;
+package ru.siksmfp.spring.hibernatehsql.api;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

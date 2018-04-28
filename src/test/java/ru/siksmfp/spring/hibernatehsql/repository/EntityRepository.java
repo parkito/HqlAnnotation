@@ -1,9 +1,8 @@
-package ru.siksmfp.spring.hibernatehsql.repository.impl;
+package ru.siksmfp.spring.hibernatehsql.repository;
 
-import org.springframework.stereotype.Repository;
-import ru.siksmfp.spring.hibernatehsql.annotation.Hql;
+import ru.siksmfp.spring.hibernatehsql.api.Hql;
+import ru.siksmfp.spring.hibernatehsql.api.IGenericRepository;
 import ru.siksmfp.spring.hibernatehsql.entity.Data;
-import ru.siksmfp.spring.hibernatehsql.repository.api.IGenericRepository;
 
 import java.util.List;
 
