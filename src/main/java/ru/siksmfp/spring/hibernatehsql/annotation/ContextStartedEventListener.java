@@ -19,14 +19,19 @@ import java.util.Set;
  */
 public class ContextStartedEventListener implements ApplicationListener<ContextRefreshedEvent> {
 
+    private static final String ROOT_PACKAGE = "";
+
     private HqlInvocationHandler hqlInvocationHandler;
     private TypeInfoContainer typeContainer;
+    private String scanPackageName;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        Set<Class<? extends IGenericRepository>> repos = findAllRepositoriesInClassPath("ru");
+        String rootPackage = scanPackageName == null ? ROOT_PACKAGE : scanPackageName;
 
-        for (Class beanClass : repos) {
+        Set<Class<? extends IGenericRepository>> repositories = findAllRepositoriesInClassPath(rootPackage);
+
+        for (Class beanClass : repositories) {
             Object beanInstance = Proxy.newProxyInstance(
                     this.getClass().getClassLoader(),
                     new Class[]{beanClass},
@@ -37,9 +42,7 @@ public class ContextStartedEventListener implements ApplicationListener<ContextR
             for (Type genericInterface : genericInterfaces) {
                 if (genericInterface instanceof ParameterizedType) {
                     Type genericType = ((ParameterizedType) genericInterface).getActualTypeArguments()[0];
-                    String fullTypeName = genericType.getTypeName();
-                    String[] split = fullTypeName.split("\\.");
-                    typeContainer.addObjectType(beanClass, split[split.length - 1]);
+                    typeContainer.addObjectType(beanClass, genericType.getTypeName());
                 }
             }
         }
@@ -84,5 +87,13 @@ public class ContextStartedEventListener implements ApplicationListener<ContextR
 
     public TypeInfoContainer getTypeContainer() {
         return typeContainer;
+    }
+
+    public String getScanPackageName() {
+        return scanPackageName;
+    }
+
+    public void setScanPackageName(String scanPackageName) {
+        this.scanPackageName = scanPackageName;
     }
 }

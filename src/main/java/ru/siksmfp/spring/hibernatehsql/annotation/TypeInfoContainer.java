@@ -1,9 +1,6 @@
 package ru.siksmfp.spring.hibernatehsql.annotation;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,34 +9,46 @@ import java.util.Map;
  */
 public class TypeInfoContainer {
 
-    private final static Map<Class, ObjectInfo> TYPE_CONTAINER_MAP = new HashMap<>();
+    private final static Map<Class, RepositoryInfo> TYPE_CONTAINER_MAP = new HashMap<>();
 
     public void addInstance(Class clazz, Object object) {
-        ObjectInfo objectInfo = new ObjectInfo();
-        objectInfo.setInstance(object);
-        TYPE_CONTAINER_MAP.put(clazz, objectInfo);
+        RepositoryInfo repositoryInfo = new RepositoryInfo();
+        repositoryInfo.setInstance(object);
+        TYPE_CONTAINER_MAP.put(clazz, repositoryInfo);
     }
 
     public void addObjectType(Class clazz, String objectType) {
-        ObjectInfo objectInfo = TYPE_CONTAINER_MAP.get(clazz);
-        objectInfo.setTypeName(objectType);
-    }
-
-    public Object getInstance(Class clazz) {
-        ObjectInfo objectInfo = TYPE_CONTAINER_MAP.get(clazz);
-        if (objectInfo != null) {
-            return objectInfo.getInstance();
+        RepositoryInfo repositoryInfo = TYPE_CONTAINER_MAP.get(clazz);
+        if (repositoryInfo != null) {
+            repositoryInfo.setTypeName(objectType);
         } else {
-            throw new IllegalStateException("Can't find an instance of " + clazz);
+            throw new IllegalStateException("Context was initialized with violations. Bean " + clazz + " wasn't initialized. ");
         }
     }
 
-    public String getObjectTypeName(Object object) {
-        for (Map.Entry<Class, ObjectInfo> next : TYPE_CONTAINER_MAP.entrySet()) {
+    public Object getInstance(Class clazz) {
+        RepositoryInfo repositoryInfo = TYPE_CONTAINER_MAP.get(clazz);
+        if (repositoryInfo != null) {
+            return repositoryInfo.getInstance();
+        } else {
+            throw new IllegalStateException("Context was initialized with violations. Can't find an instance of " + clazz);
+        }
+    }
+
+
+    public String getFullName(Object object) {
+        for (Map.Entry<Class, RepositoryInfo> next : TYPE_CONTAINER_MAP.entrySet()) {
             if (next.getValue().getInstance() == object) {
                 return next.getValue().getTypeName();
             }
         }
-        throw new IllegalStateException("Can't find an instance of " + object);
+        throw new IllegalStateException("Context was initialized with violations. Can't find an instance of " + object);
+    }
+
+    public String getShortName(Object object) {
+        String fullName = getFullName(object);
+        String[] split = fullName.split("\\.");
+        return split[split.length - 1];
+
     }
 }

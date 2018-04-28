@@ -30,18 +30,19 @@ public class HqlInvocationHandler implements InvocationHandler {
             Class<?> returnType = method.getReturnType();
             return genericRepository.performQuery(query, returnType);
         }
-
-        String objectTypeName = typeContainer.getObjectTypeName(proxy);
+        String fullName, shortName;
 
         switch (method.getName()) {
             case "save":
                 genericRepository.save(args[0]);
                 return null;
             case "batchSave":
-                genericRepository.batchSave((List) args[0], objectTypeName);
+                shortName = typeContainer.getShortName(proxy);
+                genericRepository.batchSave((List) args[0], shortName);
                 return null;
             case "find":
-                return genericRepository.find(args[0], objectTypeName);
+                fullName = typeContainer.getFullName(proxy);
+                return genericRepository.find(args[0], fullName);
             case "update":
                 genericRepository.update(args[0]);
                 return null;
@@ -49,11 +50,14 @@ public class HqlInvocationHandler implements InvocationHandler {
                 genericRepository.delete(args[0]);
                 return null;
             case "getAll":
-                return genericRepository.getAll(objectTypeName);
+                shortName = typeContainer.getShortName(proxy);
+                return genericRepository.getAll(shortName);
             case "deleteAll":
-                genericRepository.deleteAll(objectTypeName);
+                shortName = typeContainer.getShortName(proxy);
+                genericRepository.deleteAll(shortName);
             case "countElements":
-                return genericRepository.countElements(objectTypeName);
+                shortName = typeContainer.getShortName(proxy);
+                return genericRepository.countElements(shortName);
             default:
                 return null;
 
@@ -61,6 +65,7 @@ public class HqlInvocationHandler implements InvocationHandler {
     }
 
     private String wiveParametersToQuery(String query, String[] parameters) {
+        // TODO: 4/28/2018 Get rid of ''
         for (int i = 0; i < parameters.length; i++) {
             String replacePattern = "\\?" + (i + 1);
             query = query.replaceFirst(replacePattern, parameters[i]);

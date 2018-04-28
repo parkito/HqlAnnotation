@@ -79,7 +79,6 @@ public class EntityDaoTest {
 
         Assert.assertEquals(3, all.size());
 
-
         entityDao.delete(DATA_1);
         entityDao.delete(DATA_2);
 

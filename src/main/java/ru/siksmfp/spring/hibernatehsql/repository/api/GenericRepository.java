@@ -18,6 +18,7 @@ public class GenericRepository {
 
     private SessionFactory sessionFactory;
 
+    // TODO: 4/28/2018 Make it configurable
     private int batchSize = 10;
 
     public void save(Object entity) {
@@ -26,7 +27,7 @@ public class GenericRepository {
             session.save(entity);
             tx.commit();
         } catch (Exception ex) {
-            throw new DAOException("Can't save " + entity, ex);
+            throw new DAOException("Can't save entity" + entity, ex);
         }
     }
 
@@ -46,7 +47,7 @@ public class GenericRepository {
                 tx.commit();
             }
         } catch (Exception ex) {
-            throw new DAOException("Can't save batch ", ex);
+            throw new DAOException("Can't save batch of entities " + daoTypeName, ex);
         }
     }
 
@@ -57,7 +58,8 @@ public class GenericRepository {
             result = session.get(daoTypeName, (Serializable) key);
             tx.commit();
         } catch (Exception ex) {
-            throw new DAOException("Can't find " + key, ex);
+            throw new DAOException("Can't find entity " + daoTypeName + " with key " + key, ex);
+
         }
         return result;
     }

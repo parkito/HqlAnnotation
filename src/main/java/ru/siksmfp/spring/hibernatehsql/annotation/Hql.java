@@ -14,4 +14,9 @@ import java.lang.annotation.Target;
 public @interface Hql {
 
     String value() default "";
+
+    boolean nativeQuery() default false;
+
+    // TODO: 4/28/2018 Add native query implementation
+    // TODO: 4/28/2018 Add logging
 }

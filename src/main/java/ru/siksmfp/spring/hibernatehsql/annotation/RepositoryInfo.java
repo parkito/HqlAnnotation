@@ -4,7 +4,7 @@ package ru.siksmfp.spring.hibernatehsql.annotation;
  * @author Artem Karnov @date 4/27/2018.
  * @email artem.karnov@t-systems.com
  */
-public class ObjectInfo {
+public class RepositoryInfo {
     private Object instance;
     private String typeName;
 
