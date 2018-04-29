@@ -19,4 +19,5 @@ public @interface Hql {
 
     // TODO: 4/28/2018 Add native query implementation
     // TODO: 4/28/2018 Add logging
+    // TODO: 4/29/2018 Add save entity with annotation
 }

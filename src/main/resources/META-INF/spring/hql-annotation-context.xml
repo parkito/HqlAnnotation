@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean name="genericRepositoryImpl" class="ru.siksmfp.spring.hibernatehsql.repository.GenericRepositoryImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean name="typeContainer" class="ru.siksmfp.spring.hibernatehsql.info.TypeInfoContainer"/>
+
+    <bean name="hqlInvocationHandler" class="ru.siksmfp.spring.hibernatehsql.handler.HqlInvocationHandler">
+        <property name="genericRepositoryImpl" ref="genericRepositoryImpl"/>
+        <property name="typeContainer" ref="typeContainer"/>
+    </bean>
+
+    <bean name="contextStartedEventListener"
+          class="ru.siksmfp.spring.hibernatehsql.listener.ContextStartedEventListener">
+        <property name="hqlInvocationHandler" ref="hqlInvocationHandler"/>
+        <property name="typeContainer" ref="typeContainer"/>
+    </bean>
+
+    <bean name="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+        <property name="url" value="jdbc:derby:mydb"/>
+        <property name="username" value="app"/>
+        <property name="password" value="derby"/>
+    </bean>
+
+</beans>
